@@ -1,0 +1,6 @@
+*db
+output*
+*.bak
+qsys/
+*.sopcinfo
+.qsys_edit/
