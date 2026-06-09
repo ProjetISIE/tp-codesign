@@ -21,7 +21,7 @@
 int main()
 {
   printf("Hello PWM!\n");
-  FILE* fp = fopen ("/dev/Lcd", "w");
+  FILE* fp = fopen ("/dev/lcdController", "w");
   fprintf(fp,"Hello PWM");
   return 0;
 }
