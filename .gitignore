@@ -4,3 +4,10 @@ output*
 qsys/
 *.sopcinfo
 .qsys_edit/
+.metadata/
+*TempFiles
+obj/
+*.elf
+*.map
+*.objdump
+*.a
