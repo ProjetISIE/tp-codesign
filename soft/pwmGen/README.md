@@ -52,11 +52,11 @@ l'impossibilite de gerer une interruption de 1us sur le Nios II/e pour 24 PWM),
 l'architecture Qsys suivante doit etre ajoutee. Cette approche utilise le module
 `modMultiPWM.v` fourni pour decharger le processeur.
 
-- Peripheriques d'E/S (PIOs) dans Qsys :
-  - `pio_sw` : 13 bits en entree (SW0-SW12), interruptions "Any Edge"
-  - `pio_key` : 4 bits en entree (KEY0-KEY3), interruptions "Falling Edge"
-  - `pio_led` : 13 bits en sortie (LED0-LED12).
-  - `pio_hex` : 32 bits en sortie pour le multiplexage des afficheurs HEX
+- Peripheriques d'E/S (PIOs) dans Qsys:
+  - `pioSW`: 13 bits en entree (SW0-SW12), interruptions "Any Edge"
+  - `pioKEY` : 4 bits en entree (KEY0-KEY3), interruptions "Falling Edge"
+  - `pioLED` : 13 bits en sortie (LED0-LED12)
+  - `pioHEX` : 32 bits en sortie pour le multiplexage des afficheurs HEX
   - **Altera Character LCD** pour piloter l'ecran 16x2
   - `pio_pwm_ton` : 10 bits en sortie (bus `Ton` vers le `modMultiPWM`)
   - `pio_pwm_nlatch` : 24 bits en sortie (bus `nLatch` vers le `modMultiPWM`,

@@ -73,6 +73,30 @@
          type = "String";
       }
    }
+   element pioKEY
+   {
+      datum _sortIndex
+      {
+         value = "9";
+         type = "int";
+      }
+   }
+   element pioLED
+   {
+      datum _sortIndex
+      {
+         value = "10";
+         type = "int";
+      }
+   }
+   element pioSW
+   {
+      datum _sortIndex
+      {
+         value = "8";
+         type = "int";
+      }
+   }
    element pll
    {
       datum _sortIndex
@@ -400,6 +424,48 @@
   <parameter name="tracefilename" value="" />
   <parameter name="userDefinedSettings" value="" />
  </module>
+ <module name="pioKEY" kind="altera_avalon_pio" version="17.1" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="true" />
+  <parameter name="clockRate" value="100000000" />
+  <parameter name="direction" value="Input" />
+  <parameter name="edgeType" value="FALLING" />
+  <parameter name="generateIRQ" value="true" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="4" />
+ </module>
+ <module name="pioLED" kind="altera_avalon_pio" version="17.1" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="100000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="13" />
+ </module>
+ <module name="pioSW" kind="altera_avalon_pio" version="17.1" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="true" />
+  <parameter name="clockRate" value="100000000" />
+  <parameter name="direction" value="Input" />
+  <parameter name="edgeType" value="ANY" />
+  <parameter name="generateIRQ" value="true" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="13" />
+ </module>
  <module name="pll" kind="altpll" version="17.1" enabled="1">
   <parameter name="AUTO_DEVICE_FAMILY" value="Cyclone IV E" />
   <parameter name="AUTO_INCLK_INTERFACE_CLOCK_RATE" value="50000000" />
@@ -714,6 +780,9 @@
  <connection kind="clock" version="17.1" start="pll.c0" end="highResTimer.clk" />
  <connection kind="clock" version="17.1" start="pll.c0" end="sdramController.clk" />
  <connection kind="clock" version="17.1" start="pll.c0" end="lcdController.clk" />
+ <connection kind="clock" version="17.1" start="pll.c0" end="pioSW.clk" />
+ <connection kind="clock" version="17.1" start="pll.c0" end="pioKEY.clk" />
+ <connection kind="clock" version="17.1" start="pll.c0" end="pioLED.clk" />
  <connection
    kind="clock"
    version="17.1"
@@ -778,6 +847,21 @@
  <connection
    kind="reset"
    version="17.1"
+   start="primaryClock.clk_reset"
+   end="pioSW.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="primaryClock.clk_reset"
+   end="pioKEY.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="primaryClock.clk_reset"
+   end="pioLED.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
    start="mainCpu.debug_reset_request"
    end="jtagUart.reset" />
  <connection
@@ -805,6 +889,21 @@
    version="17.1"
    start="mainCpu.debug_reset_request"
    end="lcdController.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="mainCpu.debug_reset_request"
+   end="pioKEY.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="mainCpu.debug_reset_request"
+   end="pioSW.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="mainCpu.debug_reset_request"
+   end="pioLED.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
