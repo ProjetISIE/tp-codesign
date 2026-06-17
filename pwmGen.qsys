@@ -37,7 +37,7 @@
    {
       datum baseAddress
       {
-         value = "134221928";
+         value = "134222040";
          type = "String";
       }
    }
@@ -53,7 +53,7 @@
    {
       datum baseAddress
       {
-         value = "134221888";
+         value = "134222016";
          type = "String";
       }
    }
@@ -81,12 +81,28 @@
          type = "int";
       }
    }
+   element pioHEX.s1
+   {
+      datum baseAddress
+      {
+         value = "134221936";
+         type = "String";
+      }
+   }
    element pioKEY
    {
       datum _sortIndex
       {
          value = "9";
          type = "int";
+      }
+   }
+   element pioKEY.s1
+   {
+      datum baseAddress
+      {
+         value = "134221968";
+         type = "String";
       }
    }
    element pioLED
@@ -97,12 +113,28 @@
          type = "int";
       }
    }
+   element pioLED.s1
+   {
+      datum baseAddress
+      {
+         value = "134221952";
+         type = "String";
+      }
+   }
    element pioPwmOe
    {
       datum _sortIndex
       {
          value = "14";
          type = "int";
+      }
+   }
+   element pioPwmOe.s1
+   {
+      datum baseAddress
+      {
+         value = "134221888";
+         type = "String";
       }
    }
    element pioPwmTon
@@ -113,6 +145,14 @@
          type = "int";
       }
    }
+   element pioPwmTon.s1
+   {
+      datum baseAddress
+      {
+         value = "134221920";
+         type = "String";
+      }
+   }
    element pioPwnNlatch
    {
       datum _sortIndex
@@ -121,12 +161,28 @@
          type = "int";
       }
    }
+   element pioPwnNlatch.s1
+   {
+      datum baseAddress
+      {
+         value = "134221904";
+         type = "String";
+      }
+   }
    element pioSW
    {
       datum _sortIndex
       {
          value = "8";
          type = "int";
+      }
+   }
+   element pioSW.s1
+   {
+      datum baseAddress
+      {
+         value = "134221984";
+         type = "String";
       }
    }
    element pll
@@ -146,7 +202,7 @@
    {
       datum baseAddress
       {
-         value = "134221904";
+         value = "134222000";
          type = "String";
       }
    }
@@ -223,8 +279,34 @@
  <instanceScript></instanceScript>
  <interface name="clk" internal="primaryClock.clk_in" type="clock" dir="end" />
  <interface
-   name="lcd_external"
-   internal="lcdController.external"
+   name="hex"
+   internal="pioHEX.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="key"
+   internal="pioKEY.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface name="lcd" internal="lcdController.external" type="conduit" dir="end" />
+ <interface
+   name="led"
+   internal="pioLED.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pwm_nlatch"
+   internal="pioPwnNlatch.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pwm_oe"
+   internal="pioPwmOe.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="pwm_ton"
+   internal="pioPwmTon.external_connection"
    type="conduit"
    dir="end" />
  <interface
@@ -232,10 +314,11 @@
    internal="primaryClock.clk_in_reset"
    type="reset"
    dir="end" />
- <interface name="sdram_clock" internal="pll.c1" type="clock" dir="start" />
+ <interface name="sdram" internal="sdramController.wire" type="conduit" dir="end" />
+ <interface name="sdram_clk" internal="pll.c1" type="clock" dir="start" />
  <interface
-   name="sdram_wire"
-   internal="sdramController.wire"
+   name="sw"
+   internal="pioSW.external_connection"
    type="conduit"
    dir="end" />
  <module
@@ -298,7 +381,7 @@
   <parameter name="dataAddrWidth" value="28" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdramController.s1' start='0x0' end='0x8000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='mainCpu.debug_mem_slave' start='0x8000800' end='0x8001000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='highResTimer.s1' start='0x8001000' end='0x8001020' type='altera_avalon_timer.s1' /><slave name='systemTimer.s1' start='0x8001020' end='0x8001040' type='altera_avalon_timer.s1' /><slave name='lcdController.control_slave' start='0x8001040' end='0x8001050' type='altera_avalon_lcd_16207.control_slave' /><slave name='pll.pll_slave' start='0x8001050' end='0x8001060' type='altpll.pll_slave' /><slave name='jtagUart.avalon_jtag_slave' start='0x8001068' end='0x8001070' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdramController.s1' start='0x0' end='0x8000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='mainCpu.debug_mem_slave' start='0x8000800' end='0x8001000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='highResTimer.s1' start='0x8001000' end='0x8001020' type='altera_avalon_timer.s1' /><slave name='systemTimer.s1' start='0x8001020' end='0x8001040' type='altera_avalon_timer.s1' /><slave name='pioPwmOe.s1' start='0x8001040' end='0x8001050' type='altera_avalon_pio.s1' /><slave name='pioPwnNlatch.s1' start='0x8001050' end='0x8001060' type='altera_avalon_pio.s1' /><slave name='pioPwmTon.s1' start='0x8001060' end='0x8001070' type='altera_avalon_pio.s1' /><slave name='pioHEX.s1' start='0x8001070' end='0x8001080' type='altera_avalon_pio.s1' /><slave name='pioLED.s1' start='0x8001080' end='0x8001090' type='altera_avalon_pio.s1' /><slave name='pioKEY.s1' start='0x8001090' end='0x80010A0' type='altera_avalon_pio.s1' /><slave name='pioSW.s1' start='0x80010A0' end='0x80010B0' type='altera_avalon_pio.s1' /><slave name='pll.pll_slave' start='0x80010B0' end='0x80010C0' type='altpll.pll_slave' /><slave name='lcdController.control_slave' start='0x80010C0' end='0x80010D0' type='altera_avalon_lcd_16207.control_slave' /><slave name='jtagUart.avalon_jtag_slave' start='0x80010D8' end='0x80010E0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -337,14 +420,14 @@
   <parameter name="icache_tagramBlockType" value="Automatic" />
   <parameter name="impl" value="Tiny" />
   <parameter name="instAddrWidth" value="28" />
-  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='sdramController.s1' start='0x0' end='0x8000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='mainCpu.debug_mem_slave' start='0x8000800' end='0x8001000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='jtagUart.avalon_jtag_slave' start='0x8001068' end='0x8001070' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
+  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='sdramController.s1' start='0x0' end='0x8000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='mainCpu.debug_mem_slave' start='0x8000800' end='0x8001000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='jtagUart.avalon_jtag_slave' start='0x80010D8' end='0x80010E0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
   <parameter name="instructionMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="instructionMasterHighPerformanceMapParam" value="" />
   <parameter name="instruction_master_high_performance_paddr_base" value="0" />
   <parameter name="instruction_master_high_performance_paddr_size" value="0" />
   <parameter name="instruction_master_paddr_base" value="0" />
   <parameter name="instruction_master_paddr_size" value="0" />
-  <parameter name="internalIrqMaskSystemInfo" value="35" />
+  <parameter name="internalIrqMaskSystemInfo" value="31" />
   <parameter name="io_regionbase" value="0" />
   <parameter name="io_regionsize" value="0" />
   <parameter name="master_addr_map" value="false" />
@@ -782,7 +865,7 @@
    start="mainCpu.data_master"
    end="jtagUart.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x08001068" />
+  <parameter name="baseAddress" value="0x080010d8" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -791,7 +874,7 @@
    start="mainCpu.data_master"
    end="lcdController.control_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x08001040" />
+  <parameter name="baseAddress" value="0x080010c0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -809,7 +892,7 @@
    start="mainCpu.data_master"
    end="pll.pll_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x08001050" />
+  <parameter name="baseAddress" value="0x080010b0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -842,10 +925,73 @@
  <connection
    kind="avalon"
    version="17.1"
+   start="mainCpu.data_master"
+   end="pioSW.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x080010a0" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="mainCpu.data_master"
+   end="pioKEY.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x08001090" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="mainCpu.data_master"
+   end="pioLED.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x08001080" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="mainCpu.data_master"
+   end="pioHEX.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x08001070" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="mainCpu.data_master"
+   end="pioPwmTon.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x08001060" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="mainCpu.data_master"
+   end="pioPwnNlatch.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x08001050" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
+   start="mainCpu.data_master"
+   end="pioPwmOe.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x08001040" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.1"
    start="mainCpu.instruction_master"
    end="jtagUart.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x08001068" />
+  <parameter name="baseAddress" value="0x080010d8" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -889,21 +1035,27 @@
    version="17.1"
    start="mainCpu.irq"
    end="jtagUart.irq">
-  <parameter name="irqNumber" value="5" />
- </connection>
- <connection
-   kind="interrupt"
-   version="17.1"
-   start="mainCpu.irq"
-   end="systemTimer.irq">
   <parameter name="irqNumber" value="0" />
  </connection>
  <connection
    kind="interrupt"
    version="17.1"
    start="mainCpu.irq"
-   end="highResTimer.irq">
+   end="systemTimer.irq">
   <parameter name="irqNumber" value="1" />
+ </connection>
+ <connection
+   kind="interrupt"
+   version="17.1"
+   start="mainCpu.irq"
+   end="highResTimer.irq">
+  <parameter name="irqNumber" value="2" />
+ </connection>
+ <connection kind="interrupt" version="17.1" start="mainCpu.irq" end="pioSW.irq">
+  <parameter name="irqNumber" value="3" />
+ </connection>
+ <connection kind="interrupt" version="17.1" start="mainCpu.irq" end="pioKEY.irq">
+  <parameter name="irqNumber" value="4" />
  </connection>
  <connection
    kind="reset"
