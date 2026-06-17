@@ -227,6 +227,10 @@ altera_avalon_lcd_16207_driver_C_LIB_SRCS := \
 	$(altera_avalon_lcd_16207_driver_SRCS_ROOT)/src/altera_avalon_lcd_16207.c \
 	$(altera_avalon_lcd_16207_driver_SRCS_ROOT)/src/altera_avalon_lcd_16207_fd.c
 
+# altera_avalon_pio_driver sources root 
+altera_avalon_pio_driver_SRCS_ROOT := drivers
+
+# altera_avalon_pio_driver sources 
 # altera_avalon_timer_driver sources root 
 altera_avalon_timer_driver_SRCS_ROOT := drivers
 

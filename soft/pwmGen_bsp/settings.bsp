@@ -2,9 +2,9 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Jun 9, 2026 11:48:44 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1780998524875</BspGeneratedUnixTimeStamp>
-        <BspGeneratedLocation>C:\Users\Administrateur\Documents\tp3\soft\pwmGen_bsp</BspGeneratedLocation>
+        <BspGeneratedTimeStamp>17 juin 2026 18:14:40</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1781712880042</BspGeneratedUnixTimeStamp>
+        <BspGeneratedLocation>C:\Users\Administrateur\Documents\tp3.gitted\soft\pwmGen_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\pwmGen.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>
@@ -917,20 +917,62 @@
                 <attributes>timer</attributes>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>lcdController</slaveDescriptor>
+                <slaveDescriptor>pioPwmOe</slaveDescriptor>
                 <addressRange>0x08001040 - 0x0800104F</addressRange>
                 <addressSpan>16</addressSpan>
-                <attributes>printable</attributes>
+                <attributes/>
         </MemoryMap>
         <MemoryMap>
-                <slaveDescriptor>pll</slaveDescriptor>
+                <slaveDescriptor>pioPwmNLatch</slaveDescriptor>
                 <addressRange>0x08001050 - 0x0800105F</addressRange>
                 <addressSpan>16</addressSpan>
                 <attributes/>
         </MemoryMap>
         <MemoryMap>
+                <slaveDescriptor>pioPwmTon</slaveDescriptor>
+                <addressRange>0x08001060 - 0x0800106F</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>pioHEX</slaveDescriptor>
+                <addressRange>0x08001070 - 0x0800107F</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>pioLED</slaveDescriptor>
+                <addressRange>0x08001080 - 0x0800108F</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>pioKEY</slaveDescriptor>
+                <addressRange>0x08001090 - 0x0800109F</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>pioSW</slaveDescriptor>
+                <addressRange>0x080010A0 - 0x080010AF</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>pll</slaveDescriptor>
+                <addressRange>0x080010B0 - 0x080010BF</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes/>
+        </MemoryMap>
+        <MemoryMap>
+                <slaveDescriptor>lcdController</slaveDescriptor>
+                <addressRange>0x080010C0 - 0x080010CF</addressRange>
+                <addressSpan>16</addressSpan>
+                <attributes>printable</attributes>
+        </MemoryMap>
+        <MemoryMap>
                 <slaveDescriptor>jtagUart</slaveDescriptor>
-                <addressRange>0x08001068 - 0x0800106F</addressRange>
+                <addressRange>0x080010D8 - 0x080010DF</addressRange>
                 <addressSpan>8</addressSpan>
                 <attributes>printable</attributes>
         </MemoryMap>
