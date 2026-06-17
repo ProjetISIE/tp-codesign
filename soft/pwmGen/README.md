@@ -38,3 +38,6 @@ métant directement à jour la LED correspondante.
 
 Le rapport cyclique se configure avec KEY1 pour incrémenter, KEY2 pour décrémenter,
 et le KEY0 pour incrémenter rapidement (+50).
+
+Toutes ces intéractions sont gérées par interruptions, surtout pas d’attente active,
+bloquante, polling.
