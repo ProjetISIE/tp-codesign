@@ -1,15 +1,19 @@
 module pwmGenDe2_115 (
-	CLOCK_50, KEY, DRAM_DQ,
-	DRAM_ADDR, DRAM_BA, DRAM_CAS_N, DRAM_CKE, DRAM_CS_N,
+	CLOCK_50, KEY, SW, LEDR, GPIO,
+	HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, HEX6, HEX7,
+	DRAM_DQ, DRAM_ADDR, DRAM_BA, DRAM_CAS_N, DRAM_CKE, DRAM_CS_N,
 	DRAM_DQM, DRAM_RAS_N, DRAM_WE_N, DRAM_CLK,
 	LCD_RS, LCD_RW, LCD_EN, LCD_DATA
 );
 
 input          CLOCK_50;   // 50 MHz system clock source
-input  [3:0]   KEY;        // Pushbuttons for resets and inputs
+input  [3:0]   KEY;        // Pushbuttons
+input  [17:0]  SW;         // Switches
+output [17:0]  LEDR;       // Red LEDs
+output [6:0]   HEX0, HEX1, HEX2, HEX3, HEX4, HEX5, HEX6, HEX7; // 7-Segment Displays
+inout  [35:0]  GPIO;       // GPIO headers
 
 inout  [31:0]  DRAM_DQ;    // SDRAM Bidirectional data bus lines
-
 output [12:0]  DRAM_ADDR;  // SDRAM Address multiplexed bus
 output [1:0]   DRAM_BA;    // SDRAM Bank Address selects
 output         DRAM_CAS_N; // SDRAM Column Address Strobe command line
@@ -37,6 +41,36 @@ always @(posedge CLOCK_50) begin
      end
 end
 
+// Clock 1MHz generator (Divider by 50)
+reg [5:0] div_cnt = 0;
+reg clk_1M = 0;
+always @(posedge CLOCK_50) begin
+    if (div_cnt == 24) begin
+        div_cnt <= 0;
+        clk_1M <= ~clk_1M;
+    end else begin
+        div_cnt <= div_cnt + 1;
+    end
+end
+
+// Test signal 1kHz on GPIO[35]
+reg [9:0] clk_1k_cnt = 0;
+always @(posedge clk_1M) begin
+    clk_1k_cnt <= clk_1k_cnt + 1;
+end
+assign GPIO[35] = clk_1k_cnt[9];
+
+// Wires for Qsys / modMultiPWM interconnections
+wire [31:0] hex_bus;
+wire [9:0]  pwm_ton;
+wire [23:0] pwm_nlatch;
+wire [23:0] pwm_oe;
+wire [12:0] led_bus;
+
+// Assigning LEDs
+assign LEDR[12:0] = led_bus;
+assign LEDR[17:13] = 5'b00000;
+
 pwmGen u0 (
     .clk_clk           (CLOCK_50),   //        clk.clk
     .lcd_RS            (LCD_RS),     //        lcd.RS
@@ -54,13 +88,59 @@ pwmGen u0 (
     .sdram_dqm         (DRAM_DQM),         //           .dqm
     .sdram_ras_n       (DRAM_RAS_N),       //           .ras_n
     .sdram_we_n        (DRAM_WE_N),        //           .we_n
-	 .sw_export         (<connected-to-sw_export>),         //         sw.export
-    .key_export        (<connected-to-key_export>),        //        key.export
-    .hex_export        (<connected-to-hex_export>),        //        hex.export
-    .pwm_ton_export    (<connected-to-pwm_ton_export>),    //    pwm_ton.export
-    .pwm_nlatch_export (<connected-to-pwm_nlatch_export>), // pwm_nlatch.export
-    .pwm_oe_export     (<connected-to-pwm_oe_export>),     //     pwm_oe.export
-    .led_export        (<connected-to-led_export>)         //        led.export
+    .sw_export         (SW[12:0]),         //         sw.export
+    .key_export        (KEY[3:0]),         //        key.export
+    .hex_export        (hex_bus),          //        hex.export
+    .pwm_ton_export    (pwm_ton),          //    pwm_ton.export
+    .pwm_nlatch_export (pwm_nlatch),       // pwm_nlatch.export
+    .pwm_oe_export     (pwm_oe),           //     pwm_oe.export
+    .led_export        (led_bus)           //        led.export
 );
 
+modMultiPWM #(
+    .NB_PWM(24),
+    .RESOLUTION(10)
+) pwm_inst (
+    .ClkIn({24{clk_1M}}),
+    .PWMout(GPIO[23:0]),
+    .nLatch(pwm_nlatch),
+    .Ton(pwm_ton),
+    .oe(pwm_oe)
+);
+
+// Decoders for HEX displays (4 bits per display -> 7 segments)
+// 0xF is used as a blank code
+hex2seg h0(hex_bus[3:0],   HEX0);
+hex2seg h1(hex_bus[7:4],   HEX1);
+hex2seg h2(hex_bus[11:8],  HEX2);
+hex2seg h3(hex_bus[15:12], HEX3);
+hex2seg h4(hex_bus[19:16], HEX4);
+hex2seg h5(hex_bus[23:20], HEX5);
+hex2seg h6(hex_bus[27:24], HEX6);
+hex2seg h7(hex_bus[31:28], HEX7);
+
+endmodule
+
+module hex2seg(input [3:0] bin, output reg [6:0] seg);
+    always @(*) begin
+        case(bin)
+            4'h0: seg = ~7'h3F;
+            4'h1: seg = ~7'h06;
+            4'h2: seg = ~7'h5B;
+            4'h3: seg = ~7'h4F;
+            4'h4: seg = ~7'h66;
+            4'h5: seg = ~7'h6D;
+            4'h6: seg = ~7'h7D;
+            4'h7: seg = ~7'h07;
+            4'h8: seg = ~7'h7F;
+            4'h9: seg = ~7'h6F;
+            4'hA: seg = ~7'h77;
+            4'hB: seg = ~7'h7C;
+            4'hC: seg = ~7'h39;
+            4'hD: seg = ~7'h5E;
+            4'hE: seg = ~7'h79;
+            4'hF: seg = ~7'h00; // Eteint
+            default: seg = ~7'h00;
+        endcase
+    end
 endmodule
