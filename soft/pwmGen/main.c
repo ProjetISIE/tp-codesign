@@ -20,8 +20,8 @@
 
 int main()
 {
-  printf("Welcome to 24PWM!\n"); // Serial
+  printf("Bonjour 24PWM!\n"); // Serial
   FILE* fp = fopen ("/dev/lcdController", "w");
-  fprintf(fp,"Welcome to 24PWM"); // LCD Screen
+  fprintf(fp,"Bonjour 24PWM"); // LCD Screen
   return 0;
 }
