@@ -54,17 +54,17 @@ l'architecture Qsys suivante doit etre ajoutee. Cette approche utilise le module
 
 - Peripheriques d'E/S (PIOs) dans Qsys:
   - `pioSW`: 13 bits en entree (SW0-SW12), interruptions "Any Edge"
-  - `pioKEY` : 4 bits en entree (KEY0-KEY3), interruptions "Falling Edge"
-  - `pioLED` : 13 bits en sortie (LED0-LED12)
-  - `pioHEX` : 32 bits en sortie pour le multiplexage des afficheurs HEX
-  - **Altera Character LCD** pour piloter l'ecran 16x2
-  - `pio_pwm_ton` : 10 bits en sortie (bus `Ton` vers le `modMultiPWM`)
-  - `pio_pwm_nlatch` : 24 bits en sortie (bus `nLatch` vers le `modMultiPWM`,
+  - `pioKEY`: 4 bits en entree (KEY0-KEY3), interruptions "Falling Edge"
+  - `pioLED`: 13 bits en sortie (LED0-LED12)
+  - `pioHEX`: 32 bits en sortie pour le multiplexage des afficheurs HEX
+  - Altera Avalon LCD 16207 pour piloter l'ecran 16x2
+  - `pioPwmTon`: 10 bits en sortie (bus `Ton` vers le `modMultiPWM`)
+  - `pioPwnNlatch`: 24 bits en sortie (bus `nLatch` vers le `modMultiPWM`,
   	 actif a l'etat bas, defaut `0xFFFFFF`)
-  - `pio_pwm_oe` : 24 bits en sortie (bus `oe` vers le `modMultiPWM`, defaut
+  - `pioPwmOe` : 24 bits en sortie (bus `oe` vers le `modMultiPWM`, defaut
   	`0x000000`)
 
-- Integration Top-Level Verilog :
+- Integration Top-Level Verilog:
   - Instanciation du systeme Qsys
   - Instanciation du module `modMultiPWM` (`NB_PWM=24`, `RESOLUTION=10`)
   - Connexion des bus `Ton`, `nLatch` et `oe` du `modMultiPWM` aux PIOs
@@ -72,4 +72,4 @@ l'architecture Qsys suivante doit etre ajoutee. Cette approche utilise le module
   - Generation d'une horloge `clk_1MHz` (1.024MHz) a partir de l'horloge 100MHz
   	via un diviseur, connectee aux entrees `ClkIn` et utilisee pour generer le
   	signal test 1kHz sur `GPIO[35]`
-  - Connexion du bus `PWMout` sur `GPIO[0..23]`.
+  - Connexion du bus `PWMout` sur `GPIO[0..23]`

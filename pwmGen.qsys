@@ -73,6 +73,14 @@
          type = "String";
       }
    }
+   element pioHEX
+   {
+      datum _sortIndex
+      {
+         value = "11";
+         type = "int";
+      }
+   }
    element pioKEY
    {
       datum _sortIndex
@@ -86,6 +94,30 @@
       datum _sortIndex
       {
          value = "10";
+         type = "int";
+      }
+   }
+   element pioPwmOe
+   {
+      datum _sortIndex
+      {
+         value = "14";
+         type = "int";
+      }
+   }
+   element pioPwmTon
+   {
+      datum _sortIndex
+      {
+         value = "12";
+         type = "int";
+      }
+   }
+   element pioPwnNlatch
+   {
+      datum _sortIndex
+      {
+         value = "13";
          type = "int";
       }
    }
@@ -424,6 +456,20 @@
   <parameter name="tracefilename" value="" />
   <parameter name="userDefinedSettings" value="" />
  </module>
+ <module name="pioHEX" kind="altera_avalon_pio" version="17.1" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="100000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="32" />
+ </module>
  <module name="pioKEY" kind="altera_avalon_pio" version="17.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -451,6 +497,52 @@
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="13" />
+ </module>
+ <module name="pioPwmOe" kind="altera_avalon_pio" version="17.1" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="100000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="24" />
+ </module>
+ <module name="pioPwmTon" kind="altera_avalon_pio" version="17.1" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="100000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="10" />
+ </module>
+ <module
+   name="pioPwnNlatch"
+   kind="altera_avalon_pio"
+   version="17.1"
+   enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="100000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="24" />
  </module>
  <module name="pioSW" kind="altera_avalon_pio" version="17.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
@@ -783,6 +875,10 @@
  <connection kind="clock" version="17.1" start="pll.c0" end="pioSW.clk" />
  <connection kind="clock" version="17.1" start="pll.c0" end="pioKEY.clk" />
  <connection kind="clock" version="17.1" start="pll.c0" end="pioLED.clk" />
+ <connection kind="clock" version="17.1" start="pll.c0" end="pioHEX.clk" />
+ <connection kind="clock" version="17.1" start="pll.c0" end="pioPwmTon.clk" />
+ <connection kind="clock" version="17.1" start="pll.c0" end="pioPwnNlatch.clk" />
+ <connection kind="clock" version="17.1" start="pll.c0" end="pioPwmOe.clk" />
  <connection
    kind="clock"
    version="17.1"
@@ -862,6 +958,26 @@
  <connection
    kind="reset"
    version="17.1"
+   start="primaryClock.clk_reset"
+   end="pioHEX.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="primaryClock.clk_reset"
+   end="pioPwmTon.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="primaryClock.clk_reset"
+   end="pioPwnNlatch.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="primaryClock.clk_reset"
+   end="pioPwmOe.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
    start="mainCpu.debug_reset_request"
    end="jtagUart.reset" />
  <connection
@@ -904,6 +1020,26 @@
    version="17.1"
    start="mainCpu.debug_reset_request"
    end="pioLED.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="mainCpu.debug_reset_request"
+   end="pioHEX.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="mainCpu.debug_reset_request"
+   end="pioPwmTon.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="mainCpu.debug_reset_request"
+   end="pioPwnNlatch.reset" />
+ <connection
+   kind="reset"
+   version="17.1"
+   start="mainCpu.debug_reset_request"
+   end="pioPwmOe.reset" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.enableEccProtection" value="FALSE" />
  <interconnectRequirement for="$system" name="qsys_mm.insertDefaultSlave" value="FALSE" />
