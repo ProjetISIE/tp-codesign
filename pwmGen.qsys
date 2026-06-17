@@ -121,6 +121,22 @@
          type = "String";
       }
    }
+   element pioPwmNLatch
+   {
+      datum _sortIndex
+      {
+         value = "13";
+         type = "int";
+      }
+   }
+   element pioPwmNLatch.s1
+   {
+      datum baseAddress
+      {
+         value = "134221904";
+         type = "String";
+      }
+   }
    element pioPwmOe
    {
       datum _sortIndex
@@ -150,22 +166,6 @@
       datum baseAddress
       {
          value = "134221920";
-         type = "String";
-      }
-   }
-   element pioPwnNlatch
-   {
-      datum _sortIndex
-      {
-         value = "13";
-         type = "int";
-      }
-   }
-   element pioPwnNlatch.s1
-   {
-      datum baseAddress
-      {
-         value = "134221904";
          type = "String";
       }
    }
@@ -296,7 +296,7 @@
    dir="end" />
  <interface
    name="pwm_nlatch"
-   internal="pioPwnNlatch.external_connection"
+   internal="pioPwmNLatch.external_connection"
    type="conduit"
    dir="end" />
  <interface
@@ -381,7 +381,7 @@
   <parameter name="dataAddrWidth" value="28" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdramController.s1' start='0x0' end='0x8000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='mainCpu.debug_mem_slave' start='0x8000800' end='0x8001000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='highResTimer.s1' start='0x8001000' end='0x8001020' type='altera_avalon_timer.s1' /><slave name='systemTimer.s1' start='0x8001020' end='0x8001040' type='altera_avalon_timer.s1' /><slave name='pioPwmOe.s1' start='0x8001040' end='0x8001050' type='altera_avalon_pio.s1' /><slave name='pioPwnNlatch.s1' start='0x8001050' end='0x8001060' type='altera_avalon_pio.s1' /><slave name='pioPwmTon.s1' start='0x8001060' end='0x8001070' type='altera_avalon_pio.s1' /><slave name='pioHEX.s1' start='0x8001070' end='0x8001080' type='altera_avalon_pio.s1' /><slave name='pioLED.s1' start='0x8001080' end='0x8001090' type='altera_avalon_pio.s1' /><slave name='pioKEY.s1' start='0x8001090' end='0x80010A0' type='altera_avalon_pio.s1' /><slave name='pioSW.s1' start='0x80010A0' end='0x80010B0' type='altera_avalon_pio.s1' /><slave name='pll.pll_slave' start='0x80010B0' end='0x80010C0' type='altpll.pll_slave' /><slave name='lcdController.control_slave' start='0x80010C0' end='0x80010D0' type='altera_avalon_lcd_16207.control_slave' /><slave name='jtagUart.avalon_jtag_slave' start='0x80010D8' end='0x80010E0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sdramController.s1' start='0x0' end='0x8000000' type='altera_avalon_new_sdram_controller.s1' /><slave name='mainCpu.debug_mem_slave' start='0x8000800' end='0x8001000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='highResTimer.s1' start='0x8001000' end='0x8001020' type='altera_avalon_timer.s1' /><slave name='systemTimer.s1' start='0x8001020' end='0x8001040' type='altera_avalon_timer.s1' /><slave name='pioPwmOe.s1' start='0x8001040' end='0x8001050' type='altera_avalon_pio.s1' /><slave name='pioPwmNLatch.s1' start='0x8001050' end='0x8001060' type='altera_avalon_pio.s1' /><slave name='pioPwmTon.s1' start='0x8001060' end='0x8001070' type='altera_avalon_pio.s1' /><slave name='pioHEX.s1' start='0x8001070' end='0x8001080' type='altera_avalon_pio.s1' /><slave name='pioLED.s1' start='0x8001080' end='0x8001090' type='altera_avalon_pio.s1' /><slave name='pioKEY.s1' start='0x8001090' end='0x80010A0' type='altera_avalon_pio.s1' /><slave name='pioSW.s1' start='0x80010A0' end='0x80010B0' type='altera_avalon_pio.s1' /><slave name='pll.pll_slave' start='0x80010B0' end='0x80010C0' type='altpll.pll_slave' /><slave name='lcdController.control_slave' start='0x80010C0' end='0x80010D0' type='altera_avalon_lcd_16207.control_slave' /><slave name='jtagUart.avalon_jtag_slave' start='0x80010D8' end='0x80010E0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -581,6 +581,24 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="13" />
  </module>
+ <module
+   name="pioPwmNLatch"
+   kind="altera_avalon_pio"
+   version="17.1"
+   enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="100000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="16777215" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="24" />
+ </module>
  <module name="pioPwmOe" kind="altera_avalon_pio" version="17.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
@@ -608,24 +626,6 @@
   <parameter name="simDoTestBenchWiring" value="false" />
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="10" />
- </module>
- <module
-   name="pioPwnNlatch"
-   kind="altera_avalon_pio"
-   version="17.1"
-   enabled="1">
-  <parameter name="bitClearingEdgeCapReg" value="false" />
-  <parameter name="bitModifyingOutReg" value="false" />
-  <parameter name="captureEdge" value="false" />
-  <parameter name="clockRate" value="100000000" />
-  <parameter name="direction" value="Output" />
-  <parameter name="edgeType" value="RISING" />
-  <parameter name="generateIRQ" value="false" />
-  <parameter name="irqType" value="LEVEL" />
-  <parameter name="resetValue" value="0" />
-  <parameter name="simDoTestBenchWiring" value="false" />
-  <parameter name="simDrivenValue" value="0" />
-  <parameter name="width" value="24" />
  </module>
  <module name="pioSW" kind="altera_avalon_pio" version="17.1" enabled="1">
   <parameter name="bitClearingEdgeCapReg" value="false" />
@@ -971,7 +971,7 @@
    kind="avalon"
    version="17.1"
    start="mainCpu.data_master"
-   end="pioPwnNlatch.s1">
+   end="pioPwmNLatch.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x08001050" />
   <parameter name="defaultConnection" value="false" />
@@ -1023,7 +1023,7 @@
  <connection kind="clock" version="17.1" start="pll.c0" end="pioLED.clk" />
  <connection kind="clock" version="17.1" start="pll.c0" end="pioHEX.clk" />
  <connection kind="clock" version="17.1" start="pll.c0" end="pioPwmTon.clk" />
- <connection kind="clock" version="17.1" start="pll.c0" end="pioPwnNlatch.clk" />
+ <connection kind="clock" version="17.1" start="pll.c0" end="pioPwmNLatch.clk" />
  <connection kind="clock" version="17.1" start="pll.c0" end="pioPwmOe.clk" />
  <connection
    kind="clock"
@@ -1121,7 +1121,7 @@
    kind="reset"
    version="17.1"
    start="primaryClock.clk_reset"
-   end="pioPwnNlatch.reset" />
+   end="pioPwmNLatch.reset" />
  <connection
    kind="reset"
    version="17.1"
@@ -1186,7 +1186,7 @@
    kind="reset"
    version="17.1"
    start="mainCpu.debug_reset_request"
-   end="pioPwnNlatch.reset" />
+   end="pioPwmNLatch.reset" />
  <connection
    kind="reset"
    version="17.1"

@@ -38,12 +38,12 @@ always @(posedge CLOCK_50) begin
 end
 
 pwmGen u0 (
-    .clk_clk           (CLOCK_50),   //          clk.clk
+    .clk_clk           (CLOCK_50),   //        clk.clk
     .lcd_RS            (LCD_RS),     //        lcd.RS
     .lcd_RW            (LCD_RW),     //           .RW
     .lcd_data          (LCD_DATA),   //           .data
     .lcd_E             (LCD_EN),     //           .E
-    .reset_reset_n     (sys_reset_n),//        reset.reset_n
+    .reset_reset_n     (sys_reset_n),//      reset.reset_n
     .sdram_clk_clk     (DRAM_CLK),   //  sdram_clk.clk
     .sdram_addr        (DRAM_ADDR),        //      sdram.addr
     .sdram_ba          (DRAM_BA),          //           .ba
@@ -54,13 +54,13 @@ pwmGen u0 (
     .sdram_dqm         (DRAM_DQM),         //           .dqm
     .sdram_ras_n       (DRAM_RAS_N),       //           .ras_n
     .sdram_we_n        (DRAM_WE_N),        //           .we_n
-        .sw_export         (<connected-to-sw_export>),         //         sw.export
-        .key_export        (<connected-to-key_export>),        //        key.export
-        .hex_export        (<connected-to-hex_export>),        //        hex.export
-        .pwm_ton_export    (<connected-to-pwm_ton_export>),    //    pwm_ton.export
-        .pwm_nlatch_export (<connected-to-pwm_nlatch_export>), // pwm_nlatch.export
-        .pwm_oe_export     (<connected-to-pwm_oe_export>),     //     pwm_oe.export
-        .led_export        (<connected-to-led_export>)         //        led.export
+	 .sw_export         (<connected-to-sw_export>),         //         sw.export
+    .key_export        (<connected-to-key_export>),        //        key.export
+    .hex_export        (<connected-to-hex_export>),        //        hex.export
+    .pwm_ton_export    (<connected-to-pwm_ton_export>),    //    pwm_ton.export
+    .pwm_nlatch_export (<connected-to-pwm_nlatch_export>), // pwm_nlatch.export
+    .pwm_oe_export     (<connected-to-pwm_oe_export>),     //     pwm_oe.export
+    .led_export        (<connected-to-led_export>)         //        led.export
 );
 
 endmodule
