@@ -3,7 +3,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-quartus.url = "github:NixOS/nixpkgs/788c34d";
-    # nixpkgs-quartus.url = "github:NixOS/nixpkgs/95776cb0c15d796f3907ddf302c5e9c0c5cb02f6";
   };
   outputs =
     {
@@ -25,12 +24,6 @@
               inherit system;
               config.allowUnfree = true;
             };
-            pkgs-nios2 = import nixpkgs {
-              inherit system;
-              crossSystem = {
-                config = "nios2-none-elf"; # Standard Nios II bare-metal target
-              };
-            };
           }
         );
     in
@@ -39,7 +32,6 @@
         {
           pkgs,
           pkgs-quartus,
-          pkgs-nios2,
         }:
         {
           default = pkgs.mkShell {
@@ -60,8 +52,6 @@
                 lcov
                 jq
                 (pkgs-quartus.quartus-prime-lite.override { supportedDevices = [ "Cyclone IV" ]; })
-                pkgs-nios2.buildPackages.gcc
-                pkgs-nios2.buildPackages.binutils
               ]
               ++ lib.optionals stdenv.isLinux [
                 clang-uml # UML diagram generator
