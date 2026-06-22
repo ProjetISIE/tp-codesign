@@ -94,7 +94,7 @@
                 ];
               profile = ''
                 export GLIBC_TUNABLES=glibc.rtld.execstack=2
-                export PATH=${quartusUnwrapped}/quartus/bin:${quartusUnwrapped}/qsys/bin:${quartusUnwrapped}/nios2eds/bin:${quartusUnwrapped}/nios2eds/bin/gnu/H-x86_64-pc-linux-gnu/bin:$PATH
+                export PATH=${quartusUnwrapped}/quartus/bin:${quartusUnwrapped}/qsys/bin:${quartusUnwrapped}/nios2eds/sdk2/bin:${quartusUnwrapped}/nios2eds/bin:${quartusUnwrapped}/nios2eds/bin/gnu/H-x86_64-pc-linux-gnu/bin:$PATH
               '';
             }).env;
         }
