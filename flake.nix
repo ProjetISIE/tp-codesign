@@ -72,6 +72,7 @@
                   libxi
                   libxml2
                   libxcrypt-legacy
+                  perl
                 ];
               multiPkgs =
                 p: with p; [

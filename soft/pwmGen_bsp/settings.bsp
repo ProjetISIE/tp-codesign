@@ -2,11 +2,11 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>17 juin 2026 18:14:40</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1781712880042</BspGeneratedUnixTimeStamp>
-        <BspGeneratedLocation>C:\Users\Administrateur\Documents\tp3.gitted\soft\pwmGen_bsp</BspGeneratedLocation>
-        <BspSettingsFile>settings.bsp</BspSettingsFile>
-        <SopcDesignFile>..\..\pwmGen.sopcinfo</SopcDesignFile>
+        <BspGeneratedTimeStamp>22-Jun-2026 21:53:50</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1782165230453</BspGeneratedUnixTimeStamp>
+        <BspGeneratedLocation>./</BspGeneratedLocation>
+        <BspSettingsFile>../pwmGen_bsp/settings.bsp</BspSettingsFile>
+        <SopcDesignFile>../../pwmGen.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>
         <Cpu>mainCpu</Cpu>
         <SchemaVersion>1.9</SchemaVersion>

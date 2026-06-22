@@ -77,12 +77,12 @@ ALT_CPPFLAGS += -pipe
 
 # This following VERSION comment indicates the version of the tool used to 
 # generate this makefile. A makefile variable is provided for VERSION as well. 
-# ACDS_VERSION: 17.1
-ACDS_VERSION := 17.1
+# ACDS_VERSION: 20.1
+ACDS_VERSION := 20.1
 
 # This following BUILD_NUMBER comment indicates the build number of the tool 
 # used to generate this makefile. 
-# BUILD_NUMBER: 590
+# BUILD_NUMBER: 711
 
 # Qsys--generated SOPCINFO file. Required for resolving node instance ID's with 
 # design component names. 
