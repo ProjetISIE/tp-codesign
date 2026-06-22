@@ -46,7 +46,6 @@
               name = "nios2-dev-env";
               targetPkgs =
                 p: with p; [
-                  # bashInteractive
                   clang-tools # Clang CLIs, including LSP
                   cmake-format # CMake formatter
                   cmake-language-server # Cmake LSP
@@ -58,21 +57,40 @@
                   verilator
                   vhd2vl
                   quartusUnwrapped
-                ]
-              # ++ lib.optionals stdenv.isLinux [
-              #   clang-uml # UML diagram generator
-              #   cppcheck # C++ Static analysis
-              #   socat # Serial terminal for manual testing
-              #   valgrind # Debugging and profiling
-              #   lcov
-              #   jq
-              # ]
-              ;
+                  glib
+                  zlib
+                  freetype
+                  fontconfig
+                  libx11
+                  libxext
+                  libxrender
+                  libxrandr
+                  libxft
+                  libice
+                  libsm
+                  libxtst
+                  libxi
+                  libxml2
+                  libxcrypt-legacy
+                ];
               multiPkgs =
                 p: with p; [
                   ncurses5
                   zlib
                   glib
+                  freetype
+                  fontconfig
+                  libx11
+                  libxext
+                  libxrender
+                  libxrandr
+                  libxft
+                  libice
+                  libsm
+                  libxtst
+                  libxi
+                  libxml2
+                  libxcrypt-legacy
                 ];
               profile = ''
                 export PATH=${quartusUnwrapped}/quartus/bin:${quartusUnwrapped}/qsys/bin:${quartusUnwrapped}/nios2eds/bin:${quartusUnwrapped}/nios2eds/bin/gnu/H-x86_64-pc-linux-gnu/bin:$PATH
