@@ -18,6 +18,7 @@ volatile uint8_t page = 0; // 0 = 1-12, 1 = 13-24
 volatile uint8_t sel1 = 0; // 1 to 24 (0 = none)
 volatile uint8_t sel2 = 0; // 1 to 24 (0 = none)
 volatile bool excess_sw = false;
+volatile bool lcd_needs_update = false;
 
 FILE* lcd_fp = NULL;
 
@@ -171,12 +172,12 @@ void process_switches() {
     if (active_count > 2) {
         if (!excess_sw) {
             excess_sw = true;
-            update_lcd();
+            lcd_needs_update = true;
         }
     } else {
         if (excess_sw) {
             excess_sw = false;
-            update_lcd();
+            lcd_needs_update = true;
         }
         sel1 = first_sel;
         sel2 = second_sel;
@@ -191,6 +192,9 @@ static void timer_isr(void* context) {
     IOWR_ALTERA_AVALON_TIMER_CONTROL(HIGHRESTIMER_BASE, 0); // Stop
     
     process_switches();
+    
+    // Recuperer les appuis survenus PENDANT le masque d'anti-rebond
+    pending_keys |= IORD_ALTERA_AVALON_PIO_EDGE_CAP(PIOKEY_BASE);
     
     if (pending_keys) {
         process_keys(pending_keys);
@@ -252,7 +256,12 @@ int main() {
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(PIOKEY_BASE, 0xF);   // 4 keys
     
     while(1) {
-        // Aucune attente active ! Le CPU dort virtuellement ici.
+        // Le CPU dort virtuellement ici, sauf si une mise a jour longue
+        // (comme l'ecriture sur l'ecran LCD) a ete differee par une interruption.
+        if (lcd_needs_update) {
+            update_lcd();
+            lcd_needs_update = false;
+        }
     }
     
     return 0;
