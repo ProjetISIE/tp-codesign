@@ -51,7 +51,13 @@
                 vhd2vl
                 lcov
                 jq
-                (pkgs-quartus.quartus-prime-lite.override { supportedDevices = [ "Cyclone IV" ]; })
+                (pkgs-quartus.quartus-prime-lite.override {
+                  supportedDevices = [
+                    "Cyclone IV"
+                    "Nios II EDS"
+                  ];
+                })
+                ncurses5
               ]
               ++ lib.optionals stdenv.isLinux [
                 clang-uml # UML diagram generator
