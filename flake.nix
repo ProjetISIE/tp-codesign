@@ -2,8 +2,8 @@
   description = "Nix flake Verilog development environment";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    # nixpkgs-quartus.url = "github:NixOS/nixpkgs/788c34d";
-    nixpkgs-quartus.url = "github:NixOS/nixpkgs/95776cb0c15d796f3907ddf302c5e9c0c5cb02f6";
+    nixpkgs-quartus.url = "github:NixOS/nixpkgs/788c34d";
+    # nixpkgs-quartus.url = "github:NixOS/nixpkgs/95776cb0c15d796f3907ddf302c5e9c0c5cb02f6";
   };
   outputs =
     {
@@ -49,7 +49,7 @@
                 vhd2vl
                 lcov
                 jq
-                pkgs-quartus.quartus-prime-lite
+                (pkgs-quartus.quartus-prime-lite.override { supportedDevices = [ "Cyclone IV" ]; })
               ]
               ++ lib.optionals stdenv.isLinux [
                 clang-uml # UML diagram generator
