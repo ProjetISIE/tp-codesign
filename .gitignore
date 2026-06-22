@@ -12,3 +12,5 @@ obj/
 *.objdump
 *.a
 *.pdf
+.direnv/
+.cache/

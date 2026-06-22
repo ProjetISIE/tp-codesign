@@ -1,5 +1,5 @@
 {
-  description = "Nix flake Verilog development environment";
+  description = "Nix flake DE2-115 development environment";
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-quartus.url = "github:NixOS/nixpkgs/788c34d";
@@ -34,20 +34,19 @@
           pkgs-quartus,
         }:
         let
-          quartusUnwrapped = pkgs-quartus.quartus-prime-lite-unwrapped.override {
-            supportedDevices = [ "Cyclone IV" ];
-          };
-          quartusWrapped = pkgs-quartus.quartus-prime-lite.override { supportedDevices = [ "Cyclone IV" ]; };
+          quartusUnwrapped =
+            pkgs-quartus.callPackage "${nixpkgs-quartus}/pkgs/applications/editors/quartus-prime/quartus.nix"
+              {
+                supportedDevices = [ "Cyclone IV" ];
+              };
         in
         {
           default =
-            (pkgs.buildFHSUserEnv {
+            (pkgs.buildFHSEnv {
               name = "nios2-dev-env";
               targetPkgs =
-                p:
-                with p;
-                [
-                  bashInteractive
+                p: with p; [
+                  # bashInteractive
                   clang-tools # Clang CLIs, including LSP
                   cmake-format # CMake formatter
                   cmake-language-server # Cmake LSP
@@ -58,16 +57,17 @@
                   svls # SystemVerilog LSP
                   verilator
                   vhd2vl
-                  lcov
-                  jq
-                  quartusWrapped
+                  quartusUnwrapped
                 ]
-                ++ lib.optionals stdenv.isLinux [
-                  clang-uml # UML diagram generator
-                  cppcheck # C++ Static analysis
-                  socat # Serial terminal for manual testing
-                  valgrind # Debugging and profiling
-                ];
+              # ++ lib.optionals stdenv.isLinux [
+              #   clang-uml # UML diagram generator
+              #   cppcheck # C++ Static analysis
+              #   socat # Serial terminal for manual testing
+              #   valgrind # Debugging and profiling
+              #   lcov
+              #   jq
+              # ]
+              ;
               multiPkgs =
                 p: with p; [
                   ncurses5
@@ -75,7 +75,7 @@
                   glib
                 ];
               profile = ''
-                export PATH=${quartusUnwrapped}/nios2eds/bin:${quartusUnwrapped}/nios2eds/bin/gnu/H-x86_64-pc-linux-gnu/bin:$PATH
+                export PATH=${quartusUnwrapped}/quartus/bin:${quartusUnwrapped}/qsys/bin:${quartusUnwrapped}/nios2eds/bin:${quartusUnwrapped}/nios2eds/bin/gnu/H-x86_64-pc-linux-gnu/bin:$PATH
               '';
             }).env;
         }
