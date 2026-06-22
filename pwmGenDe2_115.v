@@ -41,11 +41,11 @@ always @(posedge CLOCK_50) begin
      end
 end
 
-// Clock 1MHz generator (Divider by 50)
+// Diviseur horloge 50MHz -> 1MHz (période = 1µs)
 reg [5:0] div_cnt = 0;
 reg clk_1M = 0;
 always @(posedge CLOCK_50) begin
-    if (div_cnt == 24) begin
+    if (div_cnt == 24) begin // 25 cycles haut, 25 bas
         div_cnt <= 0;
         clk_1M <= ~clk_1M;
     end else begin
@@ -53,24 +53,25 @@ always @(posedge CLOCK_50) begin
     end
 end
 
-// Test signal 1kHz on GPIO[35]
+// Signal test ~1kHz (1MHz / 1024) sur GPIO[35]
 reg [9:0] clk_1k_cnt = 0;
 always @(posedge clk_1M) begin
     clk_1k_cnt <= clk_1k_cnt + 1;
 end
-assign GPIO[35] = clk_1k_cnt[9];
+assign GPIO[35] = clk_1k_cnt[9]; // Bascule sur bit de poids fort
 
-// Wires for Qsys / modMultiPWM interconnections
+// Câblage bus internes (Qsys <-> modMultiPWM)
 wire [31:0] hex_bus;
 wire [9:0]  pwm_ton;
 wire [23:0] pwm_nlatch;
 wire [23:0] pwm_oe;
 wire [12:0] led_bus;
 
-// Assigning LEDs
+// Assignations LEDs : mapping bus Qsys et forçage 0 pour LEDs inutilisées
 assign LEDR[12:0] = led_bus;
 assign LEDR[17:13] = 5'b00000;
 
+// Instanciation système Qsys
 pwmGen u0 (
     .clk_clk           (CLOCK_50),   //        clk.clk
     .lcd_RS            (LCD_RS),     //        lcd.RS
@@ -97,19 +98,20 @@ pwmGen u0 (
     .led_export        (led_bus)           //        led.export
 );
 
+// Instanciation bloc 24 PWM 10-bit
 modMultiPWM #(
     .NB_PWM(24),
     .RESOLUTION(10)
 ) pwm_inst (
-    .ClkIn({24{clk_1M}}),
+    .ClkIn({24{clk_1M}}), // Réplication horloge 1MHz
     .PWMout(GPIO[23:0]),
     .nLatch(pwm_nlatch),
     .Ton(pwm_ton),
     .oe(pwm_oe)
 );
 
-// Decoders for HEX displays (4 bits per display -> 7 segments)
-// 0xF is used as a blank code
+// Décodeurs BCD vers 7 segments (4 bits par afficheur)
+// 0xF est utilisé comme code d'extinction
 hex2seg h0(hex_bus[3:0],   HEX0);
 hex2seg h1(hex_bus[7:4],   HEX1);
 hex2seg h2(hex_bus[11:8],  HEX2);
@@ -121,9 +123,11 @@ hex2seg h7(hex_bus[31:28], HEX7);
 
 endmodule
 
+// Décodeur logique combinatoire (actif bas, anode commune)
 module hex2seg(input [3:0] bin, output reg [6:0] seg);
     always @(*) begin
         case(bin)
+            // Inverseur bit à bit (~)
             4'h0: seg = ~7'h3F;
             4'h1: seg = ~7'h06;
             4'h2: seg = ~7'h5B;

@@ -31,32 +31,39 @@ void process_switches();
 
 void update_lcd() {
     if (!lcd_fp) return;
-    fprintf(lcd_fp, "%c[2J", 27); // Clear LCD
+    // Effacement écran via séquence d'échappement ANSI
+    fprintf(lcd_fp, "%c[2J", 27); 
     if (excess_sw) {
         fprintf(lcd_fp, "Exces Selection\n");
     } else {
         fprintf(lcd_fp, "PWM Generator\nPret.");
     }
+    // Vidage forcé du buffer pour affichage immédiat
+    fflush(lcd_fp);
 }
 
 void init_hardware() {
+    // Initialisation états internes et registres PIO
     for (int i=0; i<24; i++) {
         pwm_duty[i] = 0;
         pwm_active[i] = false;
         IOWR_ALTERA_AVALON_PIO_DATA(PIOPWMTON_BASE, 0);
+        // Génération front descendant sur nLatch[i]
         IOWR_ALTERA_AVALON_PIO_DATA(PIOPWMNLATCH_BASE, current_nlatch & ~(1 << i));
         IOWR_ALTERA_AVALON_PIO_DATA(PIOPWMNLATCH_BASE, current_nlatch);
     }
+    // Désactivation globale sorties
     IOWR_ALTERA_AVALON_PIO_DATA(PIOPWMOE_BASE, 0);
     IOWR_ALTERA_AVALON_PIO_DATA(PIOLED_BASE, 0);
-    IOWR_ALTERA_AVALON_PIO_DATA(PIOHEX_BASE, 0xFFFFFFFF); // All displays blank
+    // Extinction tous afficheurs 7-segments (état 0xF)
+    IOWR_ALTERA_AVALON_PIO_DATA(PIOHEX_BASE, 0xFFFFFFFF);
 }
 
 void update_hardware_pwm(int index) {
     if (index == 0) return;
     int i = index - 1;
     
-    // Mettre a jour l'activation
+    // Maj bit d'activation (Output Enable)
     if (pwm_active[i]) {
         current_oe |= (1 << i);
     } else {
@@ -64,14 +71,14 @@ void update_hardware_pwm(int index) {
     }
     IOWR_ALTERA_AVALON_PIO_DATA(PIOPWMOE_BASE, current_oe);
     
-    // Mettre a jour le rapport cyclique
+    // Maj registre Ton puis pulse nLatch pour prise en compte
     IOWR_ALTERA_AVALON_PIO_DATA(PIOPWMTON_BASE, pwm_duty[i]);
     IOWR_ALTERA_AVALON_PIO_DATA(PIOPWMNLATCH_BASE, current_nlatch & ~(1 << i));
     IOWR_ALTERA_AVALON_PIO_DATA(PIOPWMNLATCH_BASE, current_nlatch);
 }
 
 void update_ui() {
-    // Mise a jour des LEDs
+    // Construction mot LED : bit 0 = page, bits 1-12 = états PWM
     uint32_t led_val = (page == 1) ? 1 : 0;
     int offset = (page == 1) ? 12 : 0;
     for (int i=0; i<12; i++) {
@@ -81,30 +88,32 @@ void update_ui() {
     }
     IOWR_ALTERA_AVALON_PIO_DATA(PIOLED_BASE, led_val);
 
-    // Mise a jour des Afficheurs 7-segments
-    uint32_t hex_val = 0xFFFFFFFF; // Eteint par defaut (0xF envoye aux decodeurs HW)
+    // Eteint par defaut (0xF envoye aux decodeurs HW)
+    uint32_t hex_val = 0xFFFFFFFF; 
     
     if (!excess_sw && sel1 > 0) {
-        // HEX7-HEX6 : Indice 1ere PWM
+        // Extraction dizaines/unités 1ere sélection
         uint8_t d1 = sel1 / 10;
         uint8_t d0 = sel1 % 10;
+        // Insertion bits 24-31 (HEX6-HEX7)
         hex_val &= ~0xFF000000;
         hex_val |= (d1 << 28) | (d0 << 24);
         
-        // HEX3-HEX0 : Rapport cyclique
+        // Extraction chiffres rapport cyclique
         uint16_t duty = pwm_duty[sel1 - 1];
         uint8_t dd3 = (duty / 1000) % 10;
         uint8_t dd2 = (duty / 100) % 10;
         uint8_t dd1 = (duty / 10) % 10;
         uint8_t dd0 = duty % 10;
         
+        // Insertion bits 0-15 (HEX0-HEX3) avec masquage zéros de tête
         hex_val &= ~0x0000FFFF;
         if (duty < 1000) hex_val |= (0xF << 12); else hex_val |= (dd3 << 12);
         if (duty < 100)  hex_val |= (0xF << 8);  else hex_val |= (dd2 << 8);
         if (duty < 10)   hex_val |= (0xF << 4);  else hex_val |= (dd1 << 4);
         hex_val |= dd0;
         
-        // HEX5-HEX4 : Indice 2eme PWM
+        // Insertion 2eme sélection si existante (HEX4-HEX5)
         if (sel2 > 0) {
             uint8_t d3 = sel2 / 10;
             uint8_t d2 = sel2 % 10;
@@ -120,7 +129,7 @@ void process_keys(uint32_t keys) {
     
     int s1_idx = sel1 - 1;
     
-    // KEY3 : Activation / Desactivation
+    // Bascule activation 1ere PWM, copie sur 2eme
     if (keys & (1 << 3)) {
         bool new_state = !pwm_active[s1_idx];
         pwm_active[s1_idx] = new_state;
@@ -131,17 +140,19 @@ void process_keys(uint32_t keys) {
         }
     }
     
-    // KEY1, KEY2, KEY0 : Rapport cyclique
+    // Détermination incrément rapport cyclique
     int delta = 0;
-    if (keys & (1 << 1)) delta = 1;
-    if (keys & (1 << 2)) delta = -1;
-    if (keys & (1 << 0)) delta = 50;
+    if (keys & (1 << 1)) delta = 1;    // KEY1
+    if (keys & (1 << 2)) delta = -1;   // KEY2
+    if (keys & (1 << 0)) delta = 50;   // KEY0
     
+    // Application incrément avec saturation (0-1023)
     if (delta != 0) {
         int new_duty = (int)pwm_duty[s1_idx] + delta;
         if (new_duty > 1023) new_duty = 1023;
         if (new_duty < 0) new_duty = 0;
         
+        // Application à PWM1, copie sur PWM2
         pwm_duty[s1_idx] = new_duty;
         update_hardware_pwm(sel1);
         if (sel2 > 0) {
@@ -154,6 +165,7 @@ void process_keys(uint32_t keys) {
 
 void process_switches() {
     uint32_t sw = IORD_ALTERA_AVALON_PIO_DATA(PIOSW_BASE);
+    // Page sélectionnée par SW0
     page = (sw & 1) ? 1 : 0;
     
     int active_count = 0;
@@ -161,6 +173,7 @@ void process_switches() {
     int second_sel = 0;
     int offset = (page == 1) ? 12 : 0;
     
+    // Recherche 2 premiers switches actifs
     for (int i=1; i<=12; i++) {
         if (sw & (1 << i)) {
             active_count++;
@@ -169,6 +182,7 @@ void process_switches() {
         }
     }
     
+    // Gestion état d'erreur si > 2 sélections
     if (active_count > 2) {
         if (!excess_sw) {
             excess_sw = true;
@@ -185,15 +199,16 @@ void process_switches() {
     update_ui();
 }
 
-// ISR Timer pour l'Anti-rebond asynchrone
+// ISR Timer : fin du masque anti-rebond asynchrone
 static void timer_isr(void* context) {
-    // Acquitter l'interruption du timer
+    // Acquittement et arrêt timer
     IOWR_ALTERA_AVALON_TIMER_STATUS(HIGHRESTIMER_BASE, 0);
-    IOWR_ALTERA_AVALON_TIMER_CONTROL(HIGHRESTIMER_BASE, 0); // Stop
+    IOWR_ALTERA_AVALON_TIMER_CONTROL(HIGHRESTIMER_BASE, 0);
     
+    // Lecture états stables switches
     process_switches();
     
-    // Recuperer les appuis survenus PENDANT le masque d'anti-rebond
+    // Récupération touches pressées pendant timer
     pending_keys |= IORD_ALTERA_AVALON_PIO_EDGE_CAP(PIOKEY_BASE);
     
     if (pending_keys) {
@@ -201,39 +216,45 @@ static void timer_isr(void* context) {
         pending_keys = 0;
     }
     
-    // Nettoyer toute activite parasite intervenue pendant le debounce
+    // Purge événements (rebonds) accumulés
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(PIOSW_BASE, 0xFFFFFFFF);
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(PIOKEY_BASE, 0xF);
     
     debounce_active = false;
     
-    // Reactiver les IRQ PIO
+    // Réactivation IRQ PIO
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(PIOSW_BASE, 0x1FFF);
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(PIOKEY_BASE, 0xF);
 }
 
+// ISR Switch : déclenche anti-rebond
 static void pio_sw_isr(void* context) {
+    // Masquage IRQ pour éviter interruptions en cascade
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(PIOSW_BASE, 0);
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(PIOKEY_BASE, 0);
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(PIOSW_BASE, 0xFFFFFFFF);
     
     if (!debounce_active) {
         debounce_active = true;
-        // Lancer le timer pour ~30ms (clock 100MHz = 3 000 000 ticks)
+        // Démarrage timer ~30ms (clock 100MHz = 3M ticks)
         IOWR_ALTERA_AVALON_TIMER_PERIODL(HIGHRESTIMER_BASE, (3000000 & 0xFFFF));
         IOWR_ALTERA_AVALON_TIMER_PERIODH(HIGHRESTIMER_BASE, (3000000 >> 16));
         IOWR_ALTERA_AVALON_TIMER_CONTROL(HIGHRESTIMER_BASE, ALTERA_AVALON_TIMER_CONTROL_START_MSK | ALTERA_AVALON_TIMER_CONTROL_ITO_MSK);
     }
 }
 
+// ISR Key : capture premier appui, déclenche anti-rebond
 static void pio_key_isr(void* context) {
+    // Mémorisation touche(s) ayant déclenché IRQ
     pending_keys |= IORD_ALTERA_AVALON_PIO_EDGE_CAP(PIOKEY_BASE);
+    // Masquage IRQ
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(PIOSW_BASE, 0);
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(PIOKEY_BASE, 0);
     IOWR_ALTERA_AVALON_PIO_EDGE_CAP(PIOKEY_BASE, 0xF);
     
     if (!debounce_active) {
         debounce_active = true;
+        // Démarrage timer ~30ms
         IOWR_ALTERA_AVALON_TIMER_PERIODL(HIGHRESTIMER_BASE, (3000000 & 0xFFFF));
         IOWR_ALTERA_AVALON_TIMER_PERIODH(HIGHRESTIMER_BASE, (3000000 >> 16));
         IOWR_ALTERA_AVALON_TIMER_CONTROL(HIGHRESTIMER_BASE, ALTERA_AVALON_TIMER_CONTROL_START_MSK | ALTERA_AVALON_TIMER_CONTROL_ITO_MSK);
@@ -246,18 +267,18 @@ int main() {
     init_hardware();
     process_switches();
     
-    // Enregistrement des Interruptions
+    // Enregistrement ISR
     alt_ic_isr_register(HIGHRESTIMER_IRQ_INTERRUPT_CONTROLLER_ID, HIGHRESTIMER_IRQ, timer_isr, NULL, 0);
     alt_ic_isr_register(PIOSW_IRQ_INTERRUPT_CONTROLLER_ID, PIOSW_IRQ, pio_sw_isr, NULL, 0);
     alt_ic_isr_register(PIOKEY_IRQ_INTERRUPT_CONTROLLER_ID, PIOKEY_IRQ, pio_key_isr, NULL, 0);
     
-    // Activation initiale des masques PIO
+    // Activation initiale masques IRQ matériels
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(PIOSW_BASE, 0x1FFF); // 13 switches
     IOWR_ALTERA_AVALON_PIO_IRQ_MASK(PIOKEY_BASE, 0xF);   // 4 keys
     
     while(1) {
-        // Le CPU dort virtuellement ici, sauf si une mise a jour longue
-        // (comme l'ecriture sur l'ecran LCD) a ete differee par une interruption.
+        // Boucle principale : attente interruptions
+        // Traitement asynchrone LCD si flag levé
         if (lcd_needs_update) {
             update_lcd();
             lcd_needs_update = false;
