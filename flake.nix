@@ -25,12 +25,22 @@
               inherit system;
               config.allowUnfree = true;
             };
+            pkgs-nios2 = import nixpkgs {
+              inherit system;
+              crossSystem = {
+                config = "nios2-none-elf"; # Standard Nios II bare-metal target
+              };
+            };
           }
         );
     in
     {
       devShells = forEachSupportedSystem (
-        { pkgs, pkgs-quartus }:
+        {
+          pkgs,
+          pkgs-quartus,
+          pkgs-nios2,
+        }:
         {
           default = pkgs.mkShell {
             packages =
@@ -50,6 +60,8 @@
                 lcov
                 jq
                 (pkgs-quartus.quartus-prime-lite.override { supportedDevices = [ "Cyclone IV" ]; })
+                pkgs-nios2.buildPackages.gcc
+                pkgs-nios2.buildPackages.binutils
               ]
               ++ lib.optionals stdenv.isLinux [
                 clang-uml # UML diagram generator
